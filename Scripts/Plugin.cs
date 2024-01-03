@@ -1,20 +1,21 @@
 ﻿using BepInEx;
 using Newtonsoft.Json.Linq;
+using R2API.Utils;
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
 
-namespace ReturnsArtifacts
+namespace ReturnsArtifacts.Scripts
 {
     [BepInPlugin(PluginInfo.PLUGIN_GUID, "Returns Artifacts", PluginInfo.PLUGIN_VERSION)]
     public class Plugin : BaseUnityPlugin
     {
 
         public static AssetBundle Assets { get; private set; }
-        public static BepInEx.Logging.ManualLogSource Log {  get; private set; }
+        public static BepInEx.Logging.ManualLogSource Log { get; private set; }
 
         private void Awake()
         {
@@ -27,13 +28,25 @@ namespace ReturnsArtifacts
                 Assets = AssetBundle.LoadFromStream(stream);
             }
 
+            //LogDebug(Assets);
+            //Assets.GetAllAssetNames().ForEachTry(Log.LogDebug);
+
+            foreach (Type type in assembly.GetTypesOfType<ArtifactBase>()) {
+                ArtifactBase artifact = (ArtifactBase)Activator.CreateInstance(type);
+                artifact.Init();
+            }
+
 
 
             Logger.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!");
         }
 
-        private IEnumerable<T> GetTypesOfType<T>(this Assembly assembly) {
-            return assembly.GetTypes().Where(type => !type.IsAbstract && type.IsSubclassOf(typeof(T)));
+        public static void LogDebug(object data) {
+            Log.LogDebug(data);
+        }
+
+        public static void LogError(object data) {
+            Log.LogError(data);
         }
     }
 }

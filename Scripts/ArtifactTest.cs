@@ -12,10 +12,13 @@ namespace ReturnsArtifacts.Scripts
         public override string ArtifactName => "Artifact of Example";
         public override string ArtifactLangTokenName => "ARTIFACT_OF_EXAMPLE";
         public override string ArtifactDescription => "When enabled, print a message to the chat at the start of the run.";
-        public override Sprite ArtifactEnabledIcon => Assets.LoadAsset<Sprite>("ExampleArtifactEnabledIcon.png");
-        public override Sprite ArtifactDisabledIcon => Assets.LoadAsset<Sprite>("ExampleArtifactDisabledIcon.png");
-        public override void Init(ConfigFile config)
-        {
+        public override Sprite ArtifactEnabledIcon => Assets.LoadAsset<Sprite>("ArtifactOfCognationEnabled.png");
+        public override Sprite ArtifactDisabledIcon => Assets.LoadAsset<Sprite>("ArtifactOfCognationDisabled.png");
+        
+
+
+
+        public override void Init() {
             CreateLang();
             CreateArtifact();
             Hooks();
@@ -30,10 +33,7 @@ namespace ReturnsArtifacts.Scripts
         {
             if (NetworkServer.active && ArtifactEnabled)
             {
-                for (int i = 0; i < TimesToPrintMessageOnStart.Value; i++)
-                {
-                    Chat.AddMessage("Example Artifact has been Enabled.");
-                }
+                Chat.AddMessage("Example Artifact has been Enabled.");
             }
         }
     }
