@@ -28,4 +28,8 @@
   <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.2" PrivateAssets="all" />
   </ItemGroup>
+  
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="xcopy /y &quot;bin\Debug\netstandard2.0\ReturnsArtifacts.dll&quot; &quot;Mod\BepInEx\plugins\&quot;&#xD;&#xA;xcopy /y &quot;bin\Debug\netstandard2.0\ReturnsArtifacts.dll&quot; &quot;D:\Games\SteamLibrary\steamapps\common\Risk of Rain 2\BepInEx\plugins\&quot;&#xD;&#xA;&#xD;&#xA;start steam://rungameid/17822507831815831552" />
+  </Target>
 </Project>
