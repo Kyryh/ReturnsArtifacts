@@ -14,7 +14,11 @@ namespace ReturnsArtifacts.Scripts
         public abstract Sprite ArtifactDisabledIcon { get; }
         public ArtifactDef ArtifactDef;
         public bool ArtifactEnabled => RunArtifactManager.instance.IsArtifactEnabled(ArtifactDef);
-        public abstract void Init(ConfigFile config);
+        public virtual void Init(ConfigFile config) {
+            Init();
+        }
+
+        public abstract void Init();
         protected void CreateLang()
         {
             LanguageAPI.Add("ARTIFACT_" + ArtifactLangTokenName + "_NAME", ArtifactName);
