@@ -3,8 +3,10 @@ using R2API;
 using RoR2;
 using UnityEngine;
 
-namespace ReturnsArtifacts {
-    public abstract class ArtifactBase {
+namespace ReturnsArtifacts.Scripts
+{
+    public abstract class ArtifactBase
+    {
         public abstract string ArtifactName { get; }
         public abstract string ArtifactLangTokenName { get; }
         public abstract string ArtifactDescription { get; }
@@ -13,11 +15,13 @@ namespace ReturnsArtifacts {
         public ArtifactDef ArtifactDef;
         public bool ArtifactEnabled => RunArtifactManager.instance.IsArtifactEnabled(ArtifactDef);
         public abstract void Init(ConfigFile config);
-        protected void CreateLang() {
+        protected void CreateLang()
+        {
             LanguageAPI.Add("ARTIFACT_" + ArtifactLangTokenName + "_NAME", ArtifactName);
             LanguageAPI.Add("ARTIFACT_" + ArtifactLangTokenName + "_DESCRIPTION", ArtifactDescription);
         }
-        protected void CreateArtifact() {
+        protected void CreateArtifact()
+        {
             ArtifactDef = ScriptableObject.CreateInstance<ArtifactDef>();
             ArtifactDef.cachedName = "ARTIFACT_" + ArtifactLangTokenName;
             ArtifactDef.nameToken = "ARTIFACT_" + ArtifactLangTokenName + "_NAME";
