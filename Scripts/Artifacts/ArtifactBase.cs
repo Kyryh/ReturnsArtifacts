@@ -3,7 +3,7 @@ using R2API;
 using RoR2;
 using UnityEngine;
 
-namespace ReturnsArtifacts.Scripts
+namespace ReturnsArtifacts.Scripts.Artifacts
 {
     public abstract class ArtifactBase
     {
@@ -14,7 +14,8 @@ namespace ReturnsArtifacts.Scripts
         public abstract Sprite ArtifactDisabledIcon { get; }
         public ArtifactDef ArtifactDef;
         public bool ArtifactEnabled => RunArtifactManager.instance.IsArtifactEnabled(ArtifactDef);
-        public virtual void Init(ConfigFile config) {
+        public virtual void Init(ConfigFile config)
+        {
             Init();
         }
 

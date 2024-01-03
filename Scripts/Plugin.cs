@@ -1,6 +1,7 @@
 ﻿using BepInEx;
 using Newtonsoft.Json.Linq;
 using R2API.Utils;
+using ReturnsArtifacts.Scripts.Artifacts;
 using System;
 using System.Collections.Generic;
 using System.IO;
