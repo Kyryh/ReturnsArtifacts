@@ -4,10 +4,8 @@ using UnityEngine.Networking;
 using RoR2;
 using static ReturnsArtifacts.Scripts.Plugin;
 
-namespace ReturnsArtifacts.Scripts.Artifacts
-{
-    class ArtifactOfCognition : ArtifactBase
-    {
+namespace ReturnsArtifacts.Scripts.Artifacts {
+    class ArtifactOfCognation : ArtifactBase {
         public override string ArtifactName => "Artifact of Cognation";
         public override string ArtifactLangTokenName => "ARTIFACT_OF_COGNATION";
         public override string ArtifactDescription => "Enemies create a temporary clone on death.";
@@ -17,22 +15,18 @@ namespace ReturnsArtifacts.Scripts.Artifacts
 
 
 
-        public override void Init()
-        {
+        public override void Init() {
             CreateLang();
             CreateArtifact();
             Hooks();
         }
 
-        public override void Hooks()
-        {
+        public override void Hooks() {
             Run.onRunStartGlobal += PrintMessageToChat;
 
         }
-        private void PrintMessageToChat(Run run)
-        {
-            if (NetworkServer.active && ArtifactEnabled)
-            {
+        private void PrintMessageToChat(Run run) {
+            if (NetworkServer.active && ArtifactEnabled) {
                 Chat.AddMessage("Example Artifact has been Enabled.");
             }
         }
