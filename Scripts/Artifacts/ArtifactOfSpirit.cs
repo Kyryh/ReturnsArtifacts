@@ -75,13 +75,20 @@ namespace ReturnsArtifacts.Scripts.Artifacts {
             // if the health goes from 0.82 to 0.79
             // (segment 0.75-0.80) then we need to recalculate
             // stats
-            if (health.alive && health.fullCombinedHealth != 0 && getSegment(oldHealth) != getSegment(newHealth)) {
+            
+            if (getSegment(oldHealth) != getSegment(newHealth)) {
                 health.body.MarkAllStatsDirty();
             }
         }
 
         private void RecalculateSpeed(CharacterBody sender, RecalculateStatsAPI.StatHookEventArgs args) {
+            if (!NetworkClient.active || !ArtifactEnabled)
+                return;
 
+            if (!sender.healthComponent.alive ||
+                sender.healthComponent.fullCombinedHealth < sender.healthComponent.combinedHealth)
+
+                return;
             // Approximates the health to a health segment's start
             float health = getSegment(sender.healthComponent.combinedHealthFraction)/healthSegments;
 
