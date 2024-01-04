@@ -82,13 +82,14 @@ namespace ReturnsArtifacts.Scripts.Artifacts {
 
         private void RecalculateSpeed(CharacterBody sender, RecalculateStatsAPI.StatHookEventArgs args) {
 
-            float health = 1f / getSegment(sender.healthComponent.combinedHealthFraction);
+            // Approximates the health to a health segment's start
+            float health = getSegment(sender.healthComponent.combinedHealthFraction)/healthSegments;
 
             // Calculates the speed through the formula (1-x)^2
             // where x is the health's percentage
             float bonusSpeed = (float)Math.Pow(1f - health, 2);
 
-            LogDebug($"{sender} bonus speed: {bonusSpeed}");
+            LogDebug($"{sender}:\nhealth: {sender.healthComponent.combinedHealth}\nmax health: {sender.healthComponent.fullCombinedHealth}\nbonus speed: {bonusSpeed}");
 
             args.moveSpeedMultAdd += bonusSpeed;
             
