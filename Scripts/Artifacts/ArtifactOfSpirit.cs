@@ -75,7 +75,7 @@ namespace ReturnsArtifacts.Scripts.Artifacts {
             // if the health goes from 0.82 to 0.79
             // (segment 0.75-0.80) then we need to recalculate
             // stats
-            if (getSegment(oldHealth) != getSegment(newHealth)) {
+            if (health.alive && health.fullCombinedHealth != 0 && getSegment(oldHealth) != getSegment(newHealth)) {
                 health.body.MarkAllStatsDirty();
             }
         }
