@@ -1,6 +1,7 @@
 ﻿using BepInEx;
 using Newtonsoft.Json.Linq;
 using R2API.Utils;
+using R2API;
 using ReturnsArtifacts.Scripts.Artifacts;
 using System;
 using System.Collections.Generic;
@@ -11,6 +12,7 @@ using UnityEngine;
 
 namespace ReturnsArtifacts.Scripts
 {
+    [BepInDependency(RecalculateStatsAPI.PluginGUID)]
     [BepInPlugin(PluginInfo.PLUGIN_GUID, "Returns Artifacts", PluginInfo.PLUGIN_VERSION)]
     public class Plugin : BaseUnityPlugin
     {
@@ -29,15 +31,12 @@ namespace ReturnsArtifacts.Scripts
                 Assets = AssetBundle.LoadFromStream(stream);
             }
 
-            //LogDebug(Assets);
-            //Assets.GetAllAssetNames().ForEachTry(Log.LogDebug);
-
             foreach (Type type in assembly.GetTypesOfType<ArtifactBase>()) {
                 ArtifactBase artifact = (ArtifactBase)Activator.CreateInstance(type);
                 artifact.Init();
             }
 
-
+           
 
             Logger.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!");
         }
