@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
+using RoR2;
 
 namespace ReturnsArtifacts.Scripts
 {
@@ -36,7 +37,7 @@ namespace ReturnsArtifacts.Scripts
                 artifact.Init();
             }
 
-           
+
 
             Logger.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!");
         }
