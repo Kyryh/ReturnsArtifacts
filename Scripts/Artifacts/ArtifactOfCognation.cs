@@ -22,12 +22,20 @@ namespace ReturnsArtifacts.Scripts.Artifacts {
         }
 
         public override void Hooks() {
-            GlobalEventManager.onCharacterDeathGlobal += SpawnMonsterGhost;
+            GlobalEventManager.onCharacterDeathGlobal += SpawnMonsterClone;
         }
 
-        private void SpawnMonsterGhost(DamageReport damageReport) {
-            if (NetworkClient.active && ArtifactEnabled && damageReport != null && damageReport.victimBody)
-                Util.TryToCreateGhost(damageReport.victimBody, damageReport.victimBody, 5);
+        private void SpawnMonsterClone(DamageReport damageReport) {
+            // a bajillion checks 
+            if (NetworkClient.active && ArtifactEnabled && damageReport != null && damageReport.victimBody && damageReport.victimTeamIndex != TeamIndex.Player) {
+                CharacterBody charBody = Util.TryToCreateGhost(damageReport.victimBody, damageReport.victimBody, 5);
+                // remove the "BoostDamage" item because otherwise
+                // the clones fucking demolish you
+                charBody.master.onBodyStart += (charBody) => {
+                    charBody.inventory.RemoveItem(RoR2Content.Items.BoostDamage, 150);
+                };
+            }
         }
+
     }
 }
