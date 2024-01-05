@@ -42,13 +42,6 @@ namespace ReturnsArtifacts.Scripts.Artifacts {
                 if (!ArtifactEnabled || NetworkServer.active)
                     shrineStacks = 0;
             };
-            // Save the teleporter shrine stacks
-            Stage.onServerStageComplete += (_) => {
-                //LogDebug($"setting shrinestacks to {TeleporterInteraction.instance.shrineBonusStacks}");
-                if (!ArtifactEnabled || TeleporterInteraction.instance == null)
-                    return;
-                shrineStacks = TeleporterInteraction.instance.shrineBonusStacks;
-            };
             // Load the previous teleporter shrine stacks
             Stage.onServerStageBegin += (_) => {
                 //LogDebug($"setting teleporter shrinestacks to {shrineStacks}");
@@ -58,10 +51,12 @@ namespace ReturnsArtifacts.Scripts.Artifacts {
                     TeleporterInteraction.instance.AddShrineStack();
                 }
                 TeleporterInteraction.instance.transform.Find("TeleporterBaseMesh/BossShrineSymbol").GetComponent<MeshRenderer>().material.SetColor("_TintColor", shrineSymbolColor);
-
             };
 
+            On.RoR2.ShrineBossBehavior.AddShrineStack += OnAddShrineStack;
         }
+
+
 
         private void ConvertSpawnedMountainShrines(SpawnCard.SpawnResult result) {
             if (ArtifactEnabled && result.success) {
@@ -93,6 +88,11 @@ namespace ReturnsArtifacts.Scripts.Artifacts {
                     director.rng
                 ));
             } while (go == null);
+        }
+
+        private void OnAddShrineStack(On.RoR2.ShrineBossBehavior.orig_AddShrineStack orig, ShrineBossBehavior self, Interactor interactor) {
+            shrineStacks++;
+            orig(self, interactor);
         }
         private InteractableSpawnCard GetMountainShrine() {
             DirectorAPI.Stage stage = DirectorAPI.GetStageEnumFromSceneDef(SceneCatalog.GetSceneDefForCurrentScene());
