@@ -1,7 +1,6 @@
 ﻿using BepInEx;
 using Newtonsoft.Json.Linq;
 using R2API.Utils;
-using R2API;
 using ReturnsArtifacts.Scripts.Artifacts;
 using System;
 using System.Collections.Generic;
@@ -10,10 +9,15 @@ using System.Linq;
 using System.Reflection;
 using UnityEngine;
 using RoR2;
+using R2API;
+using R2API.ContentManagement;
 
 namespace ReturnsArtifacts.Scripts
 {
+    [BepInDependency(DirectorAPI.PluginGUID)]
     [BepInDependency(RecalculateStatsAPI.PluginGUID)]
+    [BepInDependency(R2APIContentManager.PluginGUID)]
+    [BepInDependency(LanguageAPI.PluginGUID)]
     [BepInPlugin(PluginInfo.PLUGIN_GUID, "Returns Artifacts", PluginInfo.PLUGIN_VERSION)]
     public class Plugin : BaseUnityPlugin
     {
