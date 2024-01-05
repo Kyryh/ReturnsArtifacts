@@ -4,8 +4,6 @@ using UnityEngine.Networking;
 using RoR2;
 using static ReturnsArtifacts.Scripts.Plugin;
 using R2API;
-using R2API.Utils;
-using R2API.AddressReferencedAssets;
 using System;
 using System.Runtime;
 using Newtonsoft.Json.Utilities;
@@ -19,9 +17,13 @@ namespace ReturnsArtifacts.Scripts.Artifacts {
         public override Sprite ArtifactEnabledIcon => Assets.LoadAsset<Sprite>("ArtifactOfPrestigeEnabled.png");
         public override Sprite ArtifactDisabledIcon => Assets.LoadAsset<Sprite>("ArtifactOfPrestigeDisabled.png");
 
-        private SpawnCard mountainShrineSpawnCard = Addressables.LoadAssetAsync<SpawnCard>("RoR2/Base/ShrineBoss/iscShrineBoss.asset").WaitForCompletion();
+        private InteractableSpawnCard[] mountainShrineSpawnCards = [
+            Addressables.LoadAssetAsync<InteractableSpawnCard>("RoR2/Base/ShrineBoss/iscShrineBoss.asset").WaitForCompletion(),
+            Addressables.LoadAssetAsync<InteractableSpawnCard>("RoR2/Base/ShrineBoss/iscShrineBossSandy.asset").WaitForCompletion(),
+            Addressables.LoadAssetAsync<InteractableSpawnCard>("RoR2/Base/ShrineBoss/iscShrineBossSnowy.asset").WaitForCompletion()
+        ];
 
-
+        
         private readonly static Color shrineSymbolColor = new Color(0.8f, 0.2f, 0.8f);
 
         private static int shrineStacks;
@@ -65,22 +67,14 @@ namespace ReturnsArtifacts.Scripts.Artifacts {
             }
         }
 
-        private DirectorCard FindMountainShrine(DirectorCardCategorySelection selection) {
-            foreach (DirectorCardCategorySelection.Category category in selection.categories) {
-                foreach (DirectorCard card in category.cards) {
-                    if (card.spawnCard.IsMountainShrine()) {
-                        return card;
-                    }
-                }
-            }
-            return null;
-        }
+        
         private void SpawnMountainShrine(SceneDirector director, DirectorCardCategorySelection selection) {
-            // checks if 
-            DirectorCard mountainShrine = FindMountainShrine(selection);
             // checks if the shrine of the mountain is in the current dccs
             // so that it doesn't spawn in stages where normally it can't spawn
             // e.g. bazaar, void fields, etc.
+
+            LogDebug("test");
+            InteractableSpawnCard mountainShrine = GetMountainShrine();
 
             if (mountainShrine == null)
                 return;
@@ -89,7 +83,7 @@ namespace ReturnsArtifacts.Scripts.Artifacts {
             GameObject go;
             do {
                 go = DirectorCore.instance.TrySpawnObject(new DirectorSpawnRequest(
-                    mountainShrine.spawnCard,
+                    mountainShrine,
                     new DirectorPlacementRule {
                         placementMode = DirectorPlacementRule.PlacementMode.Random
                     },
@@ -97,5 +91,29 @@ namespace ReturnsArtifacts.Scripts.Artifacts {
                 ));
             } while (go == null);
         }
+        private InteractableSpawnCard GetMountainShrine() {
+            DirectorAPI.Stage stage = DirectorAPI.GetStageEnumFromSceneDef(SceneCatalog.GetSceneDefForCurrentScene());
+
+            switch (stage) {
+                case DirectorAPI.Stage.AbyssalDepths:
+                case DirectorAPI.Stage.AphelianSanctuary:
+                case DirectorAPI.Stage.DistantRoost:
+                case DirectorAPI.Stage.ScorchedAcres:
+                case DirectorAPI.Stage.SirensCall:
+                case DirectorAPI.Stage.SkyMeadow:
+                case DirectorAPI.Stage.SulfurPools:
+                case DirectorAPI.Stage.SunderedGrove:
+                case DirectorAPI.Stage.TitanicPlains:
+                case DirectorAPI.Stage.WetlandAspect:
+                    return mountainShrineSpawnCards[0];
+                case DirectorAPI.Stage.AbandonedAqueduct:
+                    return mountainShrineSpawnCards[1];
+                case DirectorAPI.Stage.SiphonedForest:
+                case DirectorAPI.Stage.RallypointDelta:
+                    return mountainShrineSpawnCards[2];
+            }
+            return null;
+        }
+
     }
 }
