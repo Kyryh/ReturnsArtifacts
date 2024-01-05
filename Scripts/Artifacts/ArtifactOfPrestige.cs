@@ -39,29 +39,35 @@ namespace ReturnsArtifacts.Scripts.Artifacts {
             // Set the shrine stacks to 0 on run start
             Run.onRunStartGlobal += (_) => {
                 LogDebug("resetting shrine stacks");
-                shrineStacks = 0;
+                if (!ArtifactEnabled || NetworkServer.active)
+                    shrineStacks = 0;
             };
             // Save the teleporter shrine stacks
             Stage.onServerStageComplete += (_) => {
                 LogDebug($"setting shrinestacks to {TeleporterInteraction.instance.shrineBonusStacks}");
+                if (!ArtifactEnabled || TeleporterInteraction.instance == null)
+                    return;
                 shrineStacks = TeleporterInteraction.instance.shrineBonusStacks;
             };
             // Load the previous teleporter shrine stacks
             Stage.onServerStageBegin += (_) => {
                 LogDebug($"setting teleporter shrinestacks to {shrineStacks}");
+                if (!ArtifactEnabled || TeleporterInteraction.instance == null)
+                    return;
                 for (int i = 0; i < shrineStacks; i++) {
                     TeleporterInteraction.instance.AddShrineStack();
                 }
-                
+                TeleporterInteraction.instance.transform.Find("TeleporterBaseMesh/BossShrineSymbol").GetComponent<MeshRenderer>().material.SetColor("_TintColor", shrineSymbolColor);
+
             };
 
         }
 
         private void ConvertSpawnedMountainShrines(SpawnCard.SpawnResult result) {
-            if (result.success) {
+            if (ArtifactEnabled && result.success) {
                 if (result.spawnRequest.spawnCard.IsMountainShrine()) {
                     GameObject shineOfTheMountain = result.spawnedInstance;
-                    shineOfTheMountain.transform.Find("Symbol").GetComponent<MeshRenderer>().sharedMaterial.SetColor("_TintColor", shrineSymbolColor);
+                    shineOfTheMountain.transform.Find("Symbol").GetComponent<MeshRenderer>().material.SetColor("_TintColor", shrineSymbolColor);
                     shineOfTheMountain.GetComponent<PurchaseInteraction>().setUnavailableOnTeleporterActivated = false;
                 }
             }
@@ -69,11 +75,8 @@ namespace ReturnsArtifacts.Scripts.Artifacts {
 
         
         private void SpawnMountainShrine(SceneDirector director, DirectorCardCategorySelection selection) {
-            // checks if the shrine of the mountain is in the current dccs
-            // so that it doesn't spawn in stages where normally it can't spawn
-            // e.g. bazaar, void fields, etc.
-
-            LogDebug("test");
+            if (!ArtifactEnabled)
+                return;
             InteractableSpawnCard mountainShrine = GetMountainShrine();
 
             if (mountainShrine == null)
@@ -94,6 +97,10 @@ namespace ReturnsArtifacts.Scripts.Artifacts {
         private InteractableSpawnCard GetMountainShrine() {
             DirectorAPI.Stage stage = DirectorAPI.GetStageEnumFromSceneDef(SceneCatalog.GetSceneDefForCurrentScene());
 
+            // checks which version of the shrine of the mountain to use
+            // technically on some stages (e.g. rallypoint delta) shrines
+            // of the mountain can't spawn, but i spawn them anyway
+            // because why not
             switch (stage) {
                 case DirectorAPI.Stage.AbyssalDepths:
                 case DirectorAPI.Stage.AphelianSanctuary:
