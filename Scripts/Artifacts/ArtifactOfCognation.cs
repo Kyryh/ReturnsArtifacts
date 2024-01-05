@@ -26,9 +26,8 @@ namespace ReturnsArtifacts.Scripts.Artifacts {
         }
 
         private void SpawnMonsterGhost(DamageReport damageReport) {
-            if (!NetworkClient.active && damageReport == null && damageReport.victimBody)
+            if (!NetworkClient.active && ArtifactEnabled && damageReport == null && damageReport.victimBody)
                 Util.TryToCreateGhost(damageReport.victimBody, damageReport.victimBody, 5);
-            
         }
     }
 }
