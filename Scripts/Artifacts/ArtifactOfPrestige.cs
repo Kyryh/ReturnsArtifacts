@@ -38,20 +38,20 @@ namespace ReturnsArtifacts.Scripts.Artifacts {
             SpawnCard.onSpawnedServerGlobal += ConvertSpawnedMountainShrines;
             // Set the shrine stacks to 0 on run start
             Run.onRunStartGlobal += (_) => {
-                LogDebug("resetting shrine stacks");
+                //LogDebug("resetting shrine stacks");
                 if (!ArtifactEnabled || NetworkServer.active)
                     shrineStacks = 0;
             };
             // Save the teleporter shrine stacks
             Stage.onServerStageComplete += (_) => {
-                LogDebug($"setting shrinestacks to {TeleporterInteraction.instance.shrineBonusStacks}");
+                //LogDebug($"setting shrinestacks to {TeleporterInteraction.instance.shrineBonusStacks}");
                 if (!ArtifactEnabled || TeleporterInteraction.instance == null)
                     return;
                 shrineStacks = TeleporterInteraction.instance.shrineBonusStacks;
             };
             // Load the previous teleporter shrine stacks
             Stage.onServerStageBegin += (_) => {
-                LogDebug($"setting teleporter shrinestacks to {shrineStacks}");
+                //LogDebug($"setting teleporter shrinestacks to {shrineStacks}");
                 if (!ArtifactEnabled || TeleporterInteraction.instance == null)
                     return;
                 for (int i = 0; i < shrineStacks; i++) {
@@ -82,7 +82,7 @@ namespace ReturnsArtifacts.Scripts.Artifacts {
             if (mountainShrine == null)
                 return;
 
-            LogDebug("hopefully this doesn't end up in a infinite loop");
+            //LogDebug("hopefully this doesn't end up in a infinite loop");
             GameObject go;
             do {
                 go = DirectorCore.instance.TrySpawnObject(new DirectorSpawnRequest(
