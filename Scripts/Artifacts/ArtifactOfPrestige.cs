@@ -78,6 +78,9 @@ namespace ReturnsArtifacts.Scripts.Artifacts {
         private void SpawnMountainShrine(SceneDirector director, DirectorCardCategorySelection selection) {
             // checks if 
             DirectorCard mountainShrine = FindMountainShrine(selection);
+            // checks if the shrine of the mountain is in the current dccs
+            // so that it doesn't spawn in stages where normally it can't spawn
+            // e.g. bazaar, void fields, etc.
 
             if (mountainShrine == null)
                 return;
