@@ -22,13 +22,13 @@ namespace ReturnsArtifacts.Scripts.Artifacts {
         }
 
         public override void Hooks() {
-            Run.onRunStartGlobal += PrintMessageToChat;
-
+            GlobalEventManager.onCharacterDeathGlobal += SpawnMonsterGhost;
         }
-        private void PrintMessageToChat(Run run) {
-            if (NetworkServer.active && ArtifactEnabled) {
-                Chat.AddMessage("Example Artifact has been Enabled.");
-            }
+
+        private void SpawnMonsterGhost(DamageReport damageReport) {
+            if (!NetworkClient.active && damageReport == null && damageReport.victimBody)
+                Util.TryToCreateGhost(damageReport.victimBody, damageReport.victimBody, 5);
+            
         }
     }
 }
