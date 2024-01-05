@@ -30,13 +30,13 @@ namespace ReturnsArtifacts.Scripts.Artifacts {
         }
 
         public override void Hooks() {
-            LogDebug("Adding hooks");
+            //LogDebug("Adding hooks");
             On.RoR2.HealthComponent.Heal += OnHeal;
             On.RoR2.HealthComponent.TakeDamage += OnDamage;
 
             RecalculateStatsAPI.GetStatCoefficients += RecalculateSpeed;
 
-            LogDebug("hooks added");
+            //LogDebug("hooks added");
         }
 
         private void OnDamage(On.RoR2.HealthComponent.orig_TakeDamage orig, HealthComponent self, DamageInfo damageInfo) {
@@ -92,11 +92,11 @@ namespace ReturnsArtifacts.Scripts.Artifacts {
             // Approximates the health to a health segment's start
             float health = getSegment(sender.healthComponent.combinedHealthFraction)/healthSegments;
 
-            // Calculates the speed through the formula (1-x)^2
+            // Calculates the speed bonus through the formula (1-x)^2
             // where x is the health's percentage
             float bonusSpeed = (float)Math.Pow(1f - health, 2);
 
-            LogDebug($"{sender}:\nhealth: {sender.healthComponent.combinedHealth}\nmax health: {sender.healthComponent.fullCombinedHealth}\nbonus speed: {bonusSpeed}");
+            //LogDebug($"{sender}:\nhealth: {sender.healthComponent.combinedHealth}\nmax health: {sender.healthComponent.fullCombinedHealth}\nbonus speed: {bonusSpeed}");
 
             args.moveSpeedMultAdd += bonusSpeed;
             
