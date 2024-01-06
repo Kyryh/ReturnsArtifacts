@@ -11,7 +11,7 @@ namespace ReturnsArtifacts.Scripts.Artifacts {
     class ArtifactOfSpirit : ArtifactBase {
         public override string ArtifactName => "Artifact of Spirit";
         public override string ArtifactLangTokenName => "ARTIFACT_OF_SPIRIT";
-        public override string ArtifactDescription => "Characters run faster at lower health.";
+        public override string ArtifactDescription => "Characters run faster at lower health, including enemies.";
         public override Sprite ArtifactEnabledIcon => Assets.LoadAsset<Sprite>("ArtifactOfSpiritEnabled.png");
         public override Sprite ArtifactDisabledIcon => Assets.LoadAsset<Sprite>("ArtifactOfSpiritDisabled.png");
 
