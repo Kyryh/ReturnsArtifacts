@@ -24,7 +24,9 @@ namespace ReturnsArtifacts.Scripts.Artifacts {
         ];
 
         
-        private readonly static Color shrineSymbolColor = new Color(0.8f, 0.2f, 0.8f);
+        private static readonly Color shrineSymbolColor = new Color(0.8f, 0.2f, 0.8f);
+
+        private static readonly int numMountainShrinesToSpawn = 1;
 
         private static int shrineStacks;
         public override void Init() {
@@ -77,17 +79,20 @@ namespace ReturnsArtifacts.Scripts.Artifacts {
             if (mountainShrine == null)
                 return;
 
+            int shrinesSpawned = 0;
+
             //LogDebug("hopefully this doesn't end up in a infinite loop");
-            GameObject go;
-            do {
-                go = DirectorCore.instance.TrySpawnObject(new DirectorSpawnRequest(
+            while (shrinesSpawned < numMountainShrinesToSpawn) {
+                GameObject go = DirectorCore.instance.TrySpawnObject(new DirectorSpawnRequest(
                     mountainShrine,
                     new DirectorPlacementRule {
                         placementMode = DirectorPlacementRule.PlacementMode.Random
                     },
                     director.rng
                 ));
-            } while (go == null);
+                if (go != null)
+                    shrinesSpawned++;
+            } 
         }
 
         private void OnAddShrineStack(On.RoR2.ShrineBossBehavior.orig_AddShrineStack orig, ShrineBossBehavior self, Interactor interactor) {

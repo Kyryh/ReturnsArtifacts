@@ -12,7 +12,7 @@ namespace ReturnsArtifacts.Scripts.Artifacts {
         public override Sprite ArtifactEnabledIcon => Assets.LoadAsset<Sprite>("ArtifactOfCognationEnabled.png");
         public override Sprite ArtifactDisabledIcon => Assets.LoadAsset<Sprite>("ArtifactOfCognationDisabled.png");
 
-
+        public static readonly int cloneDuration = 5;
 
 
         public override void Init() {
@@ -28,7 +28,7 @@ namespace ReturnsArtifacts.Scripts.Artifacts {
         private void SpawnMonsterClone(DamageReport damageReport) {
             // a bajillion checks 
             if (NetworkClient.active && ArtifactEnabled && damageReport != null && damageReport.victimBody && damageReport.victimTeamIndex != TeamIndex.Player) {
-                CharacterBody charBody = Util.TryToCreateGhost(damageReport.victimBody, damageReport.victimBody, 5);
+                CharacterBody charBody = Util.TryToCreateGhost(damageReport.victimBody, damageReport.victimBody, cloneDuration);
                 // remove the "BoostDamage" item because otherwise
                 // the clones fucking demolish you
                 charBody.master.onBodyStart += (charBody) => {

@@ -19,11 +19,11 @@ namespace ReturnsArtifacts.Scripts.Artifacts {
         public override Sprite ArtifactEnabledIcon => Assets.LoadAsset<Sprite>("ArtifactOfDistortionEnabled.png");
         public override Sprite ArtifactDisabledIcon => Assets.LoadAsset<Sprite>("ArtifactOfDistortionDisabled.png");
 
-        public static readonly float cycleDuration = 60f;
+        private static readonly float cycleDuration = 60f;
 
-        public static readonly float cooldownReduction = 0.25f;
+        private static readonly float cooldownReduction = 0.25f;
 
-        public static readonly int numOfSkillsToLock = 1;
+        private static readonly int numOfSkillsToLock = 1;
 
         private static UnavailableSkill unavailableSkill;
 
