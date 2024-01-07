@@ -19,7 +19,7 @@ namespace ReturnsArtifacts.Scripts.Artifacts {
         public override Sprite ArtifactEnabledIcon => Assets.LoadAsset<Sprite>("ArtifactOfDistortionEnabled.png");
         public override Sprite ArtifactDisabledIcon => Assets.LoadAsset<Sprite>("ArtifactOfDistortionDisabled.png");
 
-        private static readonly float cycleDuration = 60f;
+        public static readonly float cycleDuration = 60f;
 
         private static readonly float cooldownReduction = 0.25f;
 
@@ -74,20 +74,23 @@ namespace ReturnsArtifacts.Scripts.Artifacts {
         private void CharacterBody_onBodyStartGlobal(CharacterBody body) {
             if (ArtifactEnabled && body.isPlayerControlled) {
                 SetUnavailableSkill(body);
-                Plugin.onCyclePassed += () => {
+                void action() {
+                    if (body == null) {
+                        Plugin.onCyclePassed -= action;
+                        return;
+                    }
                     foreach (GenericSkill skill in body.skillLocator.allSkills) {
                         skill.UnsetSkillOverride(this, unavailableSkill, GenericSkill.SkillOverridePriority.Replacement);
                     }
-                    
+
                     SetUnavailableSkill(body);
-                } ;
+                }
+                Plugin.onCyclePassed += action;
             }
         }
 
 
         private void SetUnavailableSkill(CharacterBody body) {
-            if (body == null)
-                return;
             for (int i = 0; i < numOfSkillsToLock; i++) {
                 switch (skillIndexes[i]) {
                     case 0:
