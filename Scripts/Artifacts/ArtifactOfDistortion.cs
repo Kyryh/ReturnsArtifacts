@@ -9,7 +9,7 @@ using R2API;
 using System;
 using System.Collections.Generic;
 using System.Collections;
-using Random = UnityEngine.Random;
+using Random = System.Random;
 
 namespace ReturnsArtifacts.Scripts.Artifacts {
     class ArtifactOfDistortion : ArtifactBase {
@@ -19,15 +19,15 @@ namespace ReturnsArtifacts.Scripts.Artifacts {
         public override Sprite ArtifactEnabledIcon => Assets.LoadAsset<Sprite>("ArtifactOfDistortionEnabled.png");
         public override Sprite ArtifactDisabledIcon => Assets.LoadAsset<Sprite>("ArtifactOfDistortionDisabled.png");
 
-        public static readonly float cycleDuration = 5f;
+        public static readonly float cycleDuration = 60f;
 
         public static readonly float cooldownReduction = 0.25f;
 
-        //public static readonly int numOfSkillsToLock = 1;
+        public static readonly int numOfSkillsToLock = 1;
 
         private static UnavailableSkill unavailableSkill;
 
-        private static int currentUnavailableSkill;
+        private static int[] skillIndexes = [0, 1, 2, 3];
 
 
         public override void Init() {
@@ -58,8 +58,8 @@ namespace ReturnsArtifacts.Scripts.Artifacts {
                 if (!ArtifactEnabled)
                     return;
                 Plugin.RemoveOnCyclePassedListeners();
-                currentUnavailableSkill = Random.Range(0, 4);
-                Plugin.onCyclePassed += () => { currentUnavailableSkill = Random.Range(0, 4); };
+                skillIndexes = skillIndexes.Shuffled();
+                Plugin.onCyclePassed += () => { skillIndexes = skillIndexes.Shuffled(); };
             };
             CharacterBody.onBodyStartGlobal += CharacterBody_onBodyStartGlobal;
             R2API.RecalculateStatsAPI.GetStatCoefficients += ReduceCooldown;
@@ -88,19 +88,21 @@ namespace ReturnsArtifacts.Scripts.Artifacts {
         private void SetUnavailableSkill(CharacterBody body) {
             if (body == null)
                 return;
-            switch (currentUnavailableSkill) {
-                case 0:
-                    SetSkillOverride(body.skillLocator.primary);
-                    return;
-                case 1:
-                    SetSkillOverride(body.skillLocator.secondary);
-                    return;
-                case 2:
-                    SetSkillOverride(body.skillLocator.utility);
-                    return;
-                case 3:
-                    SetSkillOverride(body.skillLocator.special);
-                    return;
+            for (int i = 0; i < numOfSkillsToLock; i++) {
+                switch (skillIndexes[i]) {
+                    case 0:
+                        SetSkillOverride(body.skillLocator.primary);
+                        break;
+                    case 1:
+                        SetSkillOverride(body.skillLocator.secondary);
+                        break;
+                    case 2:
+                        SetSkillOverride(body.skillLocator.utility);
+                        break;
+                    case 3:
+                        SetSkillOverride(body.skillLocator.special);
+                        break;
+                }
             }
         }
 
