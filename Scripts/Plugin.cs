@@ -25,6 +25,8 @@ namespace ReturnsArtifacts.Scripts
         public static AssetBundle Assets { get; private set; }
         public static BepInEx.Logging.ManualLogSource Log { get; private set; }
 
+        public static event Action onCyclePassed;
+
         private void Awake()
         {
             Log = Logger;
@@ -44,6 +46,22 @@ namespace ReturnsArtifacts.Scripts
 
 
             Logger.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!");
+        }
+
+        private void FixedUpdate() {
+            if (Run.instance) {
+                float time = Run.instance.GetRunStopwatch();
+                if (GetTimeCycle(time) != GetTimeCycle(time-Time.fixedDeltaTime)) {
+                    onCyclePassed?.Invoke();
+                }
+            }
+        }
+
+        public static void RemoveOnCyclePassedListeners() {
+            onCyclePassed = null;
+        }
+        private int GetTimeCycle(float time) {
+            return (int)(time / ArtifactOfDistortion.cycleDuration);
         }
 
         public static void LogDebug(object data) {

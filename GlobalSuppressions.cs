@@ -6,3 +6,4 @@
 using System.Diagnostics.CodeAnalysis;
 
 [assembly: SuppressMessage("Member Access", "Publicizer001:Accessing a member that was not originally public", Justification = "<Pending>", Scope = "member", Target = "~M:ReturnsArtifacts.Scripts.Artifacts.ArtifactOfPrestige.SpawnMountainShrine(RoR2.SceneDirector,RoR2.DirectorCardCategorySelection)")]
+[assembly: SuppressMessage("Member Access", "Publicizer001:Accessing a member that was not originally public", Justification = "<Pending>", Scope = "member", Target = "~M:ReturnsArtifacts.Scripts.Artifacts.ArtifactOfDistortion.CharacterBody_onBodyStartGlobal(RoR2.CharacterBody)")]
