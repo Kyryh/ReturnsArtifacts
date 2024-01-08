@@ -1,15 +1,9 @@
-﻿using BepInEx.Configuration;
-using UnityEngine;
-using UnityEngine.Networking;
+﻿using UnityEngine;
 using RoR2;
-using RoR2.Skills;
 using static ReturnsArtifacts.Scripts.Plugin;
 using UnityEngine.AddressableAssets;
 using R2API;
 using System;
-using System.Collections.Generic;
-using System.Collections;
-using Random = System.Random;
 
 namespace ReturnsArtifacts.Scripts.Artifacts {
     class ArtifactOfDistortion : ArtifactBase {

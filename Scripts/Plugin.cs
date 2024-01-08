@@ -3,15 +3,12 @@ using Newtonsoft.Json.Linq;
 using R2API.Utils;
 using ReturnsArtifacts.Scripts.Artifacts;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using UnityEngine;
 using RoR2;
 using R2API;
 using R2API.ContentManagement;
-using UnityEngine.PlayerLoop;
 
 namespace ReturnsArtifacts.Scripts
 {
