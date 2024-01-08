@@ -44,8 +44,8 @@ namespace ReturnsArtifacts.Scripts.Artifacts {
                 GameObject temporaryItemIndicator = GameObject.Instantiate(temporaryItemUI, self.rectTransform, false);
             };
             On.RoR2.UI.ItemInventoryDisplay.UpdateDisplay += (orig, self) => {
-                orig(self);
                 playerInventory.ResetIndicators();
+                orig(self);
             };
             On.RoR2.UI.ItemIcon.SetItemIndex += (orig, self, newItemIndex, newItemCount) => {
                 orig(self, newItemIndex, newItemCount);
