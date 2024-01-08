@@ -22,6 +22,8 @@ namespace ReturnsArtifacts.Scripts.Artifacts {
 
         private static bool giveMoreStacks = true;
 
+        public static readonly float itemLifespan = 120f;
+
         private static readonly int baseNumStacks = 3;
 
         private static readonly int bonusNumStacks = 1;
