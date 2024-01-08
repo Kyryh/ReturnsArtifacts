@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using RoR2;
 using R2API;
+using ReturnsArtifacts.Scripts.Artifacts;
 using Random = UnityEngine.Random;
 
 namespace ReturnsArtifacts.Scripts {
@@ -23,6 +24,11 @@ namespace ReturnsArtifacts.Scripts {
                 (collection[randomIndex], collection[s]) = (collection[s], collection[randomIndex]);
             }
             return collection;
+        }
+
+        public static bool IndexOfInventory(this List<TemporaryInventory> inventories, Inventory inventory, out int index) {
+            index = inventories.FindIndex(x => x.inventory == inventory);
+            return index != -1;
         }
     }
 }

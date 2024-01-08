@@ -35,7 +35,7 @@ namespace ReturnsArtifacts.Scripts
             Assembly assembly = Assembly.GetExecutingAssembly();
 
             // Load the asset bundle from the mod's assembly
-            using (Stream stream = assembly.GetManifestResourceStream("ReturnsArtifacts.Resources.returnsartifacts")) {
+            using (Stream stream = assembly.GetManifestResourceStream("ReturnsArtifacts.Resources.returnsartifactsbundle")) {
                 Assets = AssetBundle.LoadFromStream(stream);
             }
 
