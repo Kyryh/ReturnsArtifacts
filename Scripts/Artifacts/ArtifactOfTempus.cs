@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using MonoMod.Cil;
 using System.Reflection;
+using RoR2.Artifacts;
 
 
 namespace ReturnsArtifacts.Scripts.Artifacts {
@@ -40,6 +41,10 @@ namespace ReturnsArtifacts.Scripts.Artifacts {
         public override void Hooks() {
             Inventory.onServerItemGiven += Inventory_onServerItemGiven;
             CharacterBody.onBodyStartGlobal += CharacterBody_onBodyStartGlobal;
+            SceneDirector.onGenerateInteractableCardSelection += (sceneDirector, dccs) => {
+                if (ArtifactEnabled)
+                    CommandArtifactManager.OnGenerateInteractableCardSelection(sceneDirector, dccs);
+            };
             On.RoR2.PurchaseInteraction.CanBeAffordedByInteractor += PurchaseInteraction_CanBeAffordedByInteractor;
             On.RoR2.UI.ItemIcon.Awake += (orig, self) => {
                 orig(self);
