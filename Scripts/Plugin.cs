@@ -11,6 +11,7 @@ using UnityEngine;
 using RoR2;
 using R2API;
 using R2API.ContentManagement;
+using UnityEngine.PlayerLoop;
 
 namespace ReturnsArtifacts.Scripts
 {
@@ -25,7 +26,10 @@ namespace ReturnsArtifacts.Scripts
         public static AssetBundle Assets { get; private set; }
         public static BepInEx.Logging.ManualLogSource Log { get; private set; }
 
-        public static event Action onCyclePassed;
+
+        public static event Action<float> onGameTimeChanged;
+
+        private static float? previousGameTime;
 
         private void Awake()
         {
@@ -49,20 +53,16 @@ namespace ReturnsArtifacts.Scripts
         }
 
         private void FixedUpdate() {
-            if (Run.instance) {
-                float time = Run.instance.GetRunStopwatch();
-                if (GetTimeCycle(time) != GetTimeCycle(time-Time.fixedDeltaTime)) {
-                    onCyclePassed?.Invoke();
+            if (Run.instance != null) {
+                float gameTime = Run.instance.GetRunStopwatch();
+                if (gameTime != previousGameTime) {
+                    onGameTimeChanged?.Invoke(gameTime);
+                    previousGameTime = gameTime;
                 }
             }
         }
 
-        public static void RemoveOnCyclePassedListeners() {
-            onCyclePassed = null;
-        }
-        private int GetTimeCycle(float time) {
-            return (int)(time / ArtifactOfDistortion.cycleDuration);
-        }
+        
 
         public static void LogDebug(object data) {
             Log.LogDebug(data);

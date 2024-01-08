@@ -19,11 +19,13 @@ namespace ReturnsArtifacts.Scripts.Artifacts {
         public override Sprite ArtifactEnabledIcon => Assets.LoadAsset<Sprite>("ArtifactOfDistortionEnabled.png");
         public override Sprite ArtifactDisabledIcon => Assets.LoadAsset<Sprite>("ArtifactOfDistortionDisabled.png");
 
-        public static readonly float cycleDuration = 60f;
+        private static readonly float cycleDuration = 60f;
 
         private static readonly float cooldownReduction = 0.25f;
 
         private static readonly int numOfSkillsToLock = 1;
+
+        private static event Action onCyclePassed;
 
         private static UnavailableSkill unavailableSkill;
 
@@ -35,6 +37,8 @@ namespace ReturnsArtifacts.Scripts.Artifacts {
             CreateLang();
             CreateArtifact();
             unavailableSkill = InitSkill();
+            //Plugin.onFixedUpdate += FixedUpdate;
+            Plugin.onGameTimeChanged += OnGameTimeChanged;
             Hooks();
             
         }
@@ -57,13 +61,22 @@ namespace ReturnsArtifacts.Scripts.Artifacts {
             Run.onRunStartGlobal += _ => {
                 if (!ArtifactEnabled)
                     return;
-                Plugin.RemoveOnCyclePassedListeners();
+                onCyclePassed = null;
                 skillIndexes = skillIndexes.Shuffled();
-                Plugin.onCyclePassed += () => { skillIndexes = skillIndexes.Shuffled(); };
+                onCyclePassed += () => { skillIndexes = skillIndexes.Shuffled(); };
             };
             CharacterBody.onBodyStartGlobal += CharacterBody_onBodyStartGlobal;
             R2API.RecalculateStatsAPI.GetStatCoefficients += ReduceCooldown;
             
+        }
+        private void OnGameTimeChanged(float time) {
+            if (GetTimeCycle(time) != GetTimeCycle(time - Time.fixedDeltaTime)) {
+                onCyclePassed?.Invoke();
+            }
+            
+        }
+        private int GetTimeCycle(float time) {
+            return (int)(time / cycleDuration);
         }
 
         private void ReduceCooldown(CharacterBody sender, RecalculateStatsAPI.StatHookEventArgs args) {
@@ -76,7 +89,7 @@ namespace ReturnsArtifacts.Scripts.Artifacts {
                 SetUnavailableSkill(body);
                 void action() {
                     if (body == null) {
-                        Plugin.onCyclePassed -= action;
+                        onCyclePassed -= action;
                         return;
                     }
                     foreach (GenericSkill skill in body.skillLocator.allSkills) {
@@ -85,7 +98,7 @@ namespace ReturnsArtifacts.Scripts.Artifacts {
 
                     SetUnavailableSkill(body);
                 }
-                Plugin.onCyclePassed += action;
+                onCyclePassed += action;
             }
         }
 
