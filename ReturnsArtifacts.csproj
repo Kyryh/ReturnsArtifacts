@@ -10,11 +10,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Resources\returnsartifacts" />
+    <None Remove="Resources\returnsartifactsbundle" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Resources\returnsartifacts" />
+    <EmbeddedResource Include="Resources\returnsartifactsbundle" />
   </ItemGroup>
 
   <ItemGroup>
