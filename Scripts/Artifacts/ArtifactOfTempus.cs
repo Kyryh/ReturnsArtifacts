@@ -1,8 +1,12 @@
 ﻿using BepInEx.Configuration;
 using UnityEngine;
-using UnityEngine.Networking;
 using RoR2;
 using static ReturnsArtifacts.Scripts.Plugin;
+using System.Collections.Generic;
+using UnityEngine.UI;
+using MonoMod.Cil;
+using System.Reflection;
+
 
 namespace ReturnsArtifacts.Scripts.Artifacts {
     class ArtifactOfTempus : ArtifactBase {
@@ -12,9 +16,19 @@ namespace ReturnsArtifacts.Scripts.Artifacts {
         public override Sprite ArtifactEnabledIcon => Assets.LoadAsset<Sprite>("ArtifactOfTempusEnabled.png");
         public override Sprite ArtifactDisabledIcon => Assets.LoadAsset<Sprite>("ArtifactOfTempusDisabled.png");
 
+        public static GameObject temporaryItemUI = Assets.LoadAsset<GameObject>("TemporaryItemIndicatorUI.prefab");
 
+        private static TemporaryInventory playerInventory;
 
+        private static bool giveMoreStacks = true;
 
+        private static readonly int baseNumStacks = 3;
+
+        private static readonly int bonusNumStacks = 1;
+
+        private static readonly int stagesPerBonusStacks = 2;
+
+        private static int totalStacks => baseNumStacks + bonusNumStacks * (Run.instance.stageClearCount / stagesPerBonusStacks);
         public override void Init() {
             CreateLang();
             CreateArtifact();
@@ -22,13 +36,69 @@ namespace ReturnsArtifacts.Scripts.Artifacts {
         }
 
         public override void Hooks() {
-            Run.onRunStartGlobal += PrintMessageToChat;
-
+            Inventory.onServerItemGiven += Inventory_onServerItemGiven;
+            CharacterBody.onBodyStartGlobal += CharacterBody_onBodyStartGlobal;
+            On.RoR2.PurchaseInteraction.CanBeAffordedByInteractor += PurchaseInteraction_CanBeAffordedByInteractor;
+            On.RoR2.UI.ItemIcon.Awake += (orig, self) => {
+                orig(self);
+                GameObject temporaryItemIndicator = GameObject.Instantiate(temporaryItemUI, self.rectTransform, false);
+            };
+            On.RoR2.UI.ItemInventoryDisplay.UpdateDisplay += (orig, self) => {
+                orig(self);
+                playerInventory.ResetIndicators();
+            };
+            On.RoR2.UI.ItemIcon.SetItemIndex += (orig, self, newItemIndex, newItemCount) => {
+                orig(self, newItemIndex, newItemCount);
+                Transform temporaryItemIndicatorUI = self.transform.Find("TemporaryItemIndicatorUI(Clone)");
+                if (ItemCatalog.GetItemDef(newItemIndex).tier == ItemTier.NoTier) {
+                    temporaryItemIndicatorUI.gameObject.SetActive(false);
+                } else {
+                    temporaryItemIndicatorUI.gameObject.SetActive(true);
+                    playerInventory.AddTemporaryItemIndicator(newItemIndex, temporaryItemIndicatorUI.GetComponent<Image>());
+                }
+            };
         }
-        private void PrintMessageToChat(Run run) {
-            if (NetworkServer.active && ArtifactEnabled) {
-                Chat.AddMessage("Example Artifact has been Enabled.");
+
+
+        private bool PurchaseInteraction_CanBeAffordedByInteractor(On.RoR2.PurchaseInteraction.orig_CanBeAffordedByInteractor orig, PurchaseInteraction self, Interactor activator) {
+            // don't want to deal with regenerating scrap shenanigans
+            // so fuck you printers and cauldrons are disabled
+            switch (self.costType) {
+                case CostTypeIndex.WhiteItem:
+                case CostTypeIndex.GreenItem:
+                case CostTypeIndex.RedItem:
+                case CostTypeIndex.BossItem:
+                    return false;
+            }
+            return orig(self, activator);
+        }
+
+        private void CharacterBody_onBodyStartGlobal(CharacterBody body) {
+            if (body.isPlayerControlled && playerInventory?.inventory != body.inventory) {
+                playerInventory = new TemporaryInventory(body.inventory);
             }
         }
+
+
+        private void Inventory_onServerItemGiven(Inventory inventory, ItemIndex index, int count) {
+            if (inventory != playerInventory?.inventory)
+                return;
+            if (giveMoreStacks) {
+                giveMoreStacks = false;
+                ItemDef itemDef = ItemCatalog.GetItemDef(index);
+                int bonusItems = (totalStacks - 1) * count;
+                if (itemDef.tier != ItemTier.NoTier) {
+                    
+                    inventory.GiveItem(index, bonusItems);
+                    playerInventory.AddItem(index);
+                }
+            } else {
+                giveMoreStacks = true;
+            }
+        }
+
+        
     }
+
+    
 }
