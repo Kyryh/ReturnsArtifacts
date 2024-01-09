@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using RoR2;
 using System.Linq;
-using RoR2.UI;
 using UnityEngine.UI;
 using static ReturnsArtifacts.Scripts.Artifacts.ArtifactOfTempus;
 

@@ -9,9 +9,11 @@ using UnityEngine;
 using RoR2;
 using R2API;
 using R2API.ContentManagement;
+ 
 
 namespace ReturnsArtifacts.Scripts
 {
+    [BepInDependency("com.rune580.riskofoptions", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency(DirectorAPI.PluginGUID)]
     [BepInDependency(RecalculateStatsAPI.PluginGUID)]
     [BepInDependency(R2APIContentManager.PluginGUID)]

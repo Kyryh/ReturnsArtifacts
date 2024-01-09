@@ -2,10 +2,7 @@
 using UnityEngine;
 using RoR2;
 using static ReturnsArtifacts.Scripts.Plugin;
-using System.Collections.Generic;
 using UnityEngine.UI;
-using MonoMod.Cil;
-using System.Reflection;
 using RoR2.Artifacts;
 
 
