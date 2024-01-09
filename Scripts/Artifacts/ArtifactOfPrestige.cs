@@ -4,10 +4,10 @@ using UnityEngine.Networking;
 using RoR2;
 using static ReturnsArtifacts.Scripts.Plugin;
 using R2API;
-using System;
-using System.Runtime;
-using Newtonsoft.Json.Utilities;
 using UnityEngine.AddressableAssets;
+using RiskOfOptions;
+using RiskOfOptions.Options;
+using RiskOfOptions.OptionConfigs;
 
 namespace ReturnsArtifacts.Scripts.Artifacts {
     class ArtifactOfPrestige : ArtifactBase {
@@ -23,13 +23,24 @@ namespace ReturnsArtifacts.Scripts.Artifacts {
             Addressables.LoadAssetAsync<InteractableSpawnCard>("RoR2/Base/ShrineBoss/iscShrineBossSnowy.asset").WaitForCompletion()
         ];
 
+        private static readonly ConfigEntry<int> numMountainShrinesToSpawn = Plugin.ConfigFile.Bind(
+            "Prestige",
+            "MountainShrinesToSpawn",
+            1,
+            "Number of Shrines of the Mountain to spawn each stage"
+        );
         
-        private static readonly Color shrineSymbolColor = new Color(0.8f, 0.2f, 0.8f);
-
-        private static readonly int numMountainShrinesToSpawn = 1;
+        private static readonly ConfigEntry<Color> shrineSymbolColor = Plugin.ConfigFile.Bind(
+            "Prestige",
+            "ShrineSymbolColor",
+            new Color(0.8f, 0.2f, 0.8f),
+            "Color of the Shrine of the Mountain symbol"
+        );
 
         private static int shrineStacks;
         public override void Init() {
+            ModSettingsManager.AddOption(new IntSliderOption(numMountainShrinesToSpawn, new IntSliderConfig() { min = 0, max = 5}));
+            ModSettingsManager.AddOption(new ColorOption(shrineSymbolColor));
             CreateLang();
             CreateArtifact();
             Hooks();
@@ -52,7 +63,7 @@ namespace ReturnsArtifacts.Scripts.Artifacts {
                 for (int i = 0; i < shrineStacks; i++) {
                     TeleporterInteraction.instance.AddShrineStack();
                 }
-                TeleporterInteraction.instance.transform.Find("TeleporterBaseMesh/BossShrineSymbol").GetComponent<MeshRenderer>().material.SetColor("_TintColor", shrineSymbolColor);
+                TeleporterInteraction.instance.transform.Find("TeleporterBaseMesh/BossShrineSymbol").GetComponent<MeshRenderer>().material.SetColor("_TintColor", shrineSymbolColor.Value);
             };
 
             On.RoR2.ShrineBossBehavior.AddShrineStack += OnAddShrineStack;
@@ -64,7 +75,7 @@ namespace ReturnsArtifacts.Scripts.Artifacts {
             if (ArtifactEnabled && result.success) {
                 if (result.spawnRequest.spawnCard.IsMountainShrine()) {
                     GameObject shineOfTheMountain = result.spawnedInstance;
-                    shineOfTheMountain.transform.Find("Symbol").GetComponent<MeshRenderer>().material.SetColor("_TintColor", shrineSymbolColor);
+                    shineOfTheMountain.transform.Find("Symbol").GetComponent<MeshRenderer>().material.SetColor("_TintColor", shrineSymbolColor.Value);
                     shineOfTheMountain.GetComponent<PurchaseInteraction>().setUnavailableOnTeleporterActivated = false;
                 }
             }
@@ -82,7 +93,7 @@ namespace ReturnsArtifacts.Scripts.Artifacts {
             int shrinesSpawned = 0;
 
             //LogDebug("hopefully this doesn't end up in a infinite loop");
-            while (shrinesSpawned < numMountainShrinesToSpawn) {
+            while (shrinesSpawned < numMountainShrinesToSpawn.Value) {
                 GameObject go = DirectorCore.instance.TrySpawnObject(new DirectorSpawnRequest(
                     mountainShrine,
                     new DirectorPlacementRule {

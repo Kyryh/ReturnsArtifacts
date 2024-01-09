@@ -4,6 +4,9 @@ using RoR2;
 using static ReturnsArtifacts.Scripts.Plugin;
 using UnityEngine.UI;
 using RoR2.Artifacts;
+using RiskOfOptions;
+using RiskOfOptions.Options;
+using RiskOfOptions.OptionConfigs;
 
 
 namespace ReturnsArtifacts.Scripts.Artifacts {
@@ -20,16 +23,42 @@ namespace ReturnsArtifacts.Scripts.Artifacts {
 
         private static bool giveMoreStacks = true;
 
-        public static readonly float itemLifespan = 120f;
+        public static readonly ConfigEntry<int> itemLifespan = Plugin.ConfigFile.Bind(
+            "Tempus",
+            "ItemLifespan",
+            120,
+            "How many seconds a temporary item lasts"
+        );
 
-        private static readonly int baseNumStacks = 3;
+        private static readonly ConfigEntry<int> baseNumStacks = Plugin.ConfigFile.Bind(
+            "Tempus",
+            "BaseNumStacks",
+            3,
+            "Base number of stacks to give to the player\n\n" +
+            "The formula for the total amount of stacks is as follows:\n" +
+            "BaseNumStacks + BonusNumStacks * (StagesCleared / StagesPerBonusStacks)"
+        );
 
-        private static readonly int bonusNumStacks = 1;
+        private static readonly ConfigEntry<int> bonusNumStacks = Plugin.ConfigFile.Bind(
+            "Tempus",
+            "BonusNumStacks",
+            1,
+            "Bonus number of stacks to give to the player"
+        );
 
-        private static readonly int stagesPerBonusStacks = 2;
+        private static readonly ConfigEntry<int> stagesPerBonusStacks = Plugin.ConfigFile.Bind(
+            "Tempus",
+            "StagesPerBonusStacks",
+            1,
+            "Number of cleared stages needed for the bonus stacks"
+        );
 
-        private static int totalStacks => baseNumStacks + bonusNumStacks * (Run.instance.stageClearCount / stagesPerBonusStacks);
+        private static int totalStacks => baseNumStacks.Value + bonusNumStacks.Value * (Run.instance.stageClearCount / stagesPerBonusStacks.Value);
         public override void Init() {
+            ModSettingsManager.AddOption(new IntSliderOption(itemLifespan, new IntSliderConfig() { min = 30, max = 600}));
+            ModSettingsManager.AddOption(new IntSliderOption(baseNumStacks, new IntSliderConfig() { min = 1, max = 10}));
+            ModSettingsManager.AddOption(new IntSliderOption(bonusNumStacks, new IntSliderConfig() { min = 0, max = 5}));
+            ModSettingsManager.AddOption(new IntSliderOption(stagesPerBonusStacks, new IntSliderConfig() { min = 1, max = 5 }));
             CreateLang();
             CreateArtifact();
             Hooks();

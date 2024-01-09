@@ -24,7 +24,7 @@ namespace ReturnsArtifacts.Scripts {
                 } else {
                     inventory.RemoveItem(itemIndex);
                     if (inventory.GetItemCount(itemIndex) > 0 ) {
-                        SetItemTime(itemIndex, itemLifespan);
+                        SetItemTime(itemIndex, itemLifespan.Value);
                     } else {
                         itemsRemainingTime.Remove(itemIndex);
                         temporaryItemIndicators.Remove(itemIndex);
@@ -37,7 +37,7 @@ namespace ReturnsArtifacts.Scripts {
             itemsRemainingTime[itemIndex] = newRemainingTime;
             temporaryItemIndicators.TryGetValue(itemIndex, out Image temporaryItemIndicator);
             if (temporaryItemIndicator != null ) {
-                temporaryItemIndicator.fillAmount = newRemainingTime / itemLifespan;
+                temporaryItemIndicator.fillAmount = newRemainingTime / itemLifespan.Value;
             }
         }
 
@@ -45,7 +45,7 @@ namespace ReturnsArtifacts.Scripts {
             if (!itemsRemainingTime.ContainsKey(itemIndex))
                 itemsRemainingTime.Add(
                     itemIndex,
-                    itemLifespan
+                    itemLifespan.Value
                 );
         }
 

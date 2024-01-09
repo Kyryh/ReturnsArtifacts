@@ -9,7 +9,7 @@ using UnityEngine;
 using RoR2;
 using R2API;
 using R2API.ContentManagement;
- 
+
 
 namespace ReturnsArtifacts.Scripts
 {
@@ -25,6 +25,7 @@ namespace ReturnsArtifacts.Scripts
         public static AssetBundle Assets { get; private set; }
         public static BepInEx.Logging.ManualLogSource Log { get; private set; }
 
+        public static BepInEx.Configuration.ConfigFile ConfigFile { get; private set; }
 
         public static event Action<float> onGameTimeChanged;
 
@@ -33,6 +34,8 @@ namespace ReturnsArtifacts.Scripts
         private void Awake()
         {
             Log = Logger;
+
+            ConfigFile = Config;
 
             Assembly assembly = Assembly.GetExecutingAssembly();
 
@@ -60,7 +63,7 @@ namespace ReturnsArtifacts.Scripts
                 }
             }
         }
-
+        
         
 
         public static void LogDebug(object data) {

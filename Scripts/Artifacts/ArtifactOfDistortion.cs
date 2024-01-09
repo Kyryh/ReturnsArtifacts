@@ -1,9 +1,13 @@
-﻿using UnityEngine;
+﻿using BepInEx.Configuration;
+using UnityEngine;
 using RoR2;
 using static ReturnsArtifacts.Scripts.Plugin;
 using UnityEngine.AddressableAssets;
 using R2API;
 using System;
+using RiskOfOptions;
+using RiskOfOptions.Options;
+using RiskOfOptions.OptionConfigs;
 
 namespace ReturnsArtifacts.Scripts.Artifacts {
     class ArtifactOfDistortion : ArtifactBase {
@@ -13,11 +17,26 @@ namespace ReturnsArtifacts.Scripts.Artifacts {
         public override Sprite ArtifactEnabledIcon => Assets.LoadAsset<Sprite>("ArtifactOfDistortionEnabled.png");
         public override Sprite ArtifactDisabledIcon => Assets.LoadAsset<Sprite>("ArtifactOfDistortionDisabled.png");
 
-        private static readonly float cycleDuration = 60f;
+        private static readonly ConfigEntry<int> cycleDuration = Plugin.ConfigFile.Bind(
+            "Distortion",
+            "CycleDuration",
+            60,
+            "How many seconds it takes to change locked skill(s)"
+        );
 
-        private static readonly float cooldownReduction = 0.25f;
+        private static readonly ConfigEntry<float> cooldownReduction = Plugin.ConfigFile.Bind(
+            "Distortion",
+            "CooldownReduction",
+            25f,
+            "Percentage of cooldown reduction to apply to non-locked skills"
+        );
 
-        private static readonly int numOfSkillsToLock = 1;
+        private static readonly ConfigEntry<int> skillsToLock = Plugin.ConfigFile.Bind(
+            "Distortion",
+            "SkillsToLock",
+            1,
+            "How many skills to lock each cycle"
+        );
 
         private static event Action onCyclePassed;
 
@@ -27,11 +46,12 @@ namespace ReturnsArtifacts.Scripts.Artifacts {
 
 
         public override void Init() {
-            
+            ModSettingsManager.AddOption(new IntSliderOption(cycleDuration, new IntSliderConfig() { min = 20, max = 300}));
+            ModSettingsManager.AddOption(new SliderOption(cooldownReduction, new SliderConfig() { min = 0, max = 100}));
+            ModSettingsManager.AddOption(new IntSliderOption(skillsToLock, new IntSliderConfig() { min = 1, max = 3}));
             CreateLang();
             CreateArtifact();
             unavailableSkill = InitSkill();
-            //Plugin.onFixedUpdate += FixedUpdate;
             Plugin.onGameTimeChanged += OnGameTimeChanged;
             Hooks();
             
@@ -70,12 +90,12 @@ namespace ReturnsArtifacts.Scripts.Artifacts {
             
         }
         private int GetTimeCycle(float time) {
-            return (int)(time / cycleDuration);
+            return (int)(time / cycleDuration.Value);
         }
 
         private void ReduceCooldown(CharacterBody sender, RecalculateStatsAPI.StatHookEventArgs args) {
             if (ArtifactEnabled)
-                args.cooldownMultAdd -= cooldownReduction;
+                args.cooldownMultAdd -= cooldownReduction.Value/100;
         }
 
         private void CharacterBody_onBodyStartGlobal(CharacterBody body) {
@@ -98,7 +118,7 @@ namespace ReturnsArtifacts.Scripts.Artifacts {
 
 
         private void SetUnavailableSkill(CharacterBody body) {
-            for (int i = 0; i < numOfSkillsToLock; i++) {
+            for (int i = 0; i < skillsToLock.Value; i++) {
                 switch (skillIndexes[i]) {
                     case 0:
                         SetSkillOverride(body.skillLocator.primary);
