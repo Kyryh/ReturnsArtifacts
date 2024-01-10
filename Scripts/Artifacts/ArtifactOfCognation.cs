@@ -38,7 +38,7 @@ namespace ReturnsArtifacts.Scripts.Artifacts {
             // a bajillion checks 
             if (NetworkClient.active && ArtifactEnabled && damageReport != null &&
                 damageReport.victimBody && damageReport.victimTeamIndex != TeamIndex.Player &&
-                damageReport.victimBody.inventory.GetItemCount(RoR2Content.Items.Ghost) != 0) {
+                damageReport.victimBody.inventory.GetItemCount(RoR2Content.Items.Ghost) == 0) {
                 CharacterBody charBody = Util.TryToCreateGhost(damageReport.victimBody, damageReport.victimBody, cloneLifespan.Value);
                 // remove the "BoostDamage" item because otherwise
                 // the clones fucking demolish you
