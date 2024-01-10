@@ -65,6 +65,7 @@ namespace ReturnsArtifacts.Scripts.Artifacts {
         }
 
         public override void Hooks() {
+            // this code is a mess hjesus fucking christ
             Inventory.onServerItemGiven += Inventory_onServerItemGiven;
             CharacterBody.onBodyStartGlobal += CharacterBody_onBodyStartGlobal;
             SceneDirector.onGenerateInteractableCardSelection += (sceneDirector, dccs) => {
@@ -74,14 +75,17 @@ namespace ReturnsArtifacts.Scripts.Artifacts {
             On.RoR2.PurchaseInteraction.CanBeAffordedByInteractor += PurchaseInteraction_CanBeAffordedByInteractor;
             On.RoR2.UI.ItemIcon.Awake += (orig, self) => {
                 orig(self);
-                GameObject temporaryItemIndicator = GameObject.Instantiate(temporaryItemUI, self.rectTransform, false);
+                if (ArtifactEnabled)
+                    GameObject.Instantiate(temporaryItemUI, self.rectTransform, false);
             };
             On.RoR2.UI.ItemInventoryDisplay.UpdateDisplay += (orig, self) => {
-                playerInventory.ResetIndicators();
+                playerInventory?.ResetIndicators();
                 orig(self);
             };
             On.RoR2.UI.ItemIcon.SetItemIndex += (orig, self, newItemIndex, newItemCount) => {
                 orig(self, newItemIndex, newItemCount);
+                if (!ArtifactEnabled)
+                    return;
                 Transform temporaryItemIndicatorUI = self.transform.Find("TemporaryItemIndicatorUI(Clone)");
                 if (ItemCatalog.GetItemDef(newItemIndex).tier == ItemTier.NoTier) {
                     temporaryItemIndicatorUI.gameObject.SetActive(false);
@@ -96,25 +100,26 @@ namespace ReturnsArtifacts.Scripts.Artifacts {
         private bool PurchaseInteraction_CanBeAffordedByInteractor(On.RoR2.PurchaseInteraction.orig_CanBeAffordedByInteractor orig, PurchaseInteraction self, Interactor activator) {
             // don't want to deal with regenerating scrap shenanigans
             // so fuck you printers and cauldrons are disabled
-            switch (self.costType) {
-                case CostTypeIndex.WhiteItem:
-                case CostTypeIndex.GreenItem:
-                case CostTypeIndex.RedItem:
-                case CostTypeIndex.BossItem:
-                    return false;
-            }
+            if (ArtifactEnabled)
+                switch (self.costType) {
+                    case CostTypeIndex.WhiteItem:
+                    case CostTypeIndex.GreenItem:
+                    case CostTypeIndex.RedItem:
+                    case CostTypeIndex.BossItem:
+                        return false;
+                }
             return orig(self, activator);
         }
 
         private void CharacterBody_onBodyStartGlobal(CharacterBody body) {
-            if (body.isPlayerControlled && playerInventory?.inventory != body.inventory) {
+            if (ArtifactEnabled && body.isPlayerControlled && body.inventory != playerInventory?.inventory) {
                 playerInventory = new TemporaryInventory(body.inventory);
             }
         }
 
 
         private void Inventory_onServerItemGiven(Inventory inventory, ItemIndex index, int count) {
-            if (inventory != playerInventory?.inventory)
+            if (!ArtifactEnabled || inventory != playerInventory?.inventory)
                 return;
             if (giveMoreStacks) {
                 giveMoreStacks = false;
