@@ -23,14 +23,14 @@ namespace ReturnsArtifacts.Scripts.Artifacts {
             Addressables.LoadAssetAsync<InteractableSpawnCard>("RoR2/Base/ShrineBoss/iscShrineBossSnowy.asset").WaitForCompletion()
         ];
 
-        private static readonly ConfigEntry<int> numMountainShrinesToSpawn = Plugin.ConfigFile.Bind(
+        public static readonly ConfigEntry<int> numMountainShrinesToSpawn = Plugin.ConfigFile.Bind(
             "Prestige",
             "MountainShrinesToSpawn",
             1,
             "Number of Shrines of the Mountain to spawn each stage"
         );
         
-        private static readonly ConfigEntry<Color> shrineSymbolColor = Plugin.ConfigFile.Bind(
+        public static readonly ConfigEntry<Color> shrineSymbolColor = Plugin.ConfigFile.Bind(
             "Prestige",
             "ShrineSymbolColor",
             new Color(0.8f, 0.2f, 0.8f),
@@ -39,8 +39,6 @@ namespace ReturnsArtifacts.Scripts.Artifacts {
 
         private static int shrineStacks;
         public override void Init() {
-            ModSettingsManager.AddOption(new IntSliderOption(numMountainShrinesToSpawn, new IntSliderConfig() { min = 0, max = 5}));
-            ModSettingsManager.AddOption(new ColorOption(shrineSymbolColor));
             CreateLang();
             CreateArtifact();
             Hooks();

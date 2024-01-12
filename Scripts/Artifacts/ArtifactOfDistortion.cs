@@ -17,21 +17,21 @@ namespace ReturnsArtifacts.Scripts.Artifacts {
         public override Sprite ArtifactEnabledIcon => Assets.LoadAsset<Sprite>("ArtifactOfDistortionEnabled.png");
         public override Sprite ArtifactDisabledIcon => Assets.LoadAsset<Sprite>("ArtifactOfDistortionDisabled.png");
 
-        private static readonly ConfigEntry<int> cycleDuration = Plugin.ConfigFile.Bind(
+        public static readonly ConfigEntry<int> cycleDuration = Plugin.ConfigFile.Bind(
             "Distortion",
             "CycleDuration",
             60,
             "How many seconds it takes to change locked skill(s)"
         );
 
-        private static readonly ConfigEntry<float> cooldownReduction = Plugin.ConfigFile.Bind(
+        public static readonly ConfigEntry<float> cooldownReduction = Plugin.ConfigFile.Bind(
             "Distortion",
             "CooldownReduction",
             25f,
             "Percentage of cooldown reduction to apply to non-locked skills"
         );
 
-        private static readonly ConfigEntry<int> skillsToLock = Plugin.ConfigFile.Bind(
+        public static readonly ConfigEntry<int> skillsToLock = Plugin.ConfigFile.Bind(
             "Distortion",
             "SkillsToLock",
             1,
@@ -46,9 +46,6 @@ namespace ReturnsArtifacts.Scripts.Artifacts {
 
 
         public override void Init() {
-            ModSettingsManager.AddOption(new IntSliderOption(cycleDuration, new IntSliderConfig() { min = 20, max = 300}));
-            ModSettingsManager.AddOption(new SliderOption(cooldownReduction, new SliderConfig() { min = 0, max = 100}));
-            ModSettingsManager.AddOption(new IntSliderOption(skillsToLock, new IntSliderConfig() { min = 1, max = 3}));
             CreateLang();
             CreateArtifact();
             unavailableSkill = InitSkill();

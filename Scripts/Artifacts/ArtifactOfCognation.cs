@@ -24,7 +24,6 @@ namespace ReturnsArtifacts.Scripts.Artifacts {
 
 
         public override void Init() {
-            ModSettingsManager.AddOption(new IntSliderOption(cloneLifespan, new IntSliderConfig() { min = 5, max = 60}));
             CreateLang();
             CreateArtifact();
             Hooks();
